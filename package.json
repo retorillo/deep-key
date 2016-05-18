@@ -1,0 +1,33 @@
+{
+  "name": "deep-key",
+  "version": "0.8.0",
+  "description": "Similar to key of object (Object.keys) but \"deep\" key. Provides recursive access to object member.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/retorillo/deep-key.git"
+  },
+  "keywords": [
+    "key",
+    "object",
+    "accessor",
+    "get",
+    "set",
+    "getter",
+    "setter",
+    "property",
+    "path"
+  ],
+  "author": "retorillo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/retorillo/deep-key/issues"
+  },
+  "homepage": "https://github.com/retorillo/deep-key#readme"
+}
