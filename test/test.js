@@ -19,12 +19,24 @@ var lastMethod;
       desc: 'enumeration deep keys',
       method: DeepKey.keys,
       input: [{ shallow: { deep: { deeper1: {}, deeper2: { deepest: 0 } } } }],
-      expected: [ 
+      expected: [
           ['shallow'],
           ['shallow', 'deep'],
           ['shallow', 'deep', 'deeper1'],
           ['shallow', 'deep', 'deeper2'],
           ['shallow', 'deep', 'deeper2', 'deepest'],
+      ],
+   },
+   {
+      desc: 'enumeration deep keys (depth is specified)',
+      method: DeepKey.keys,
+      input: [{ shallow: { deep: { deeper1: {}, deeper2: { deepest: 0 } } } }, 2],
+      expected: [
+          ['shallow'],
+          ['shallow', 'deep'],
+          // ['shallow', 'deep', 'deeper1'],
+          // ['shallow', 'deep', 'deeper2'],
+          // ['shallow', 'deep', 'deeper2', 'deepest'],
       ],
    },
    {
@@ -78,7 +90,7 @@ var lastMethod;
    },
    {
       desc: 'handling inextensible object',
-      method: (obj, deepkey, val) => { 
+      method: (obj, deepkey, val) => {
          try {
             DeepKey.set(obj, deepkey, val);
             return 'success'
@@ -92,6 +104,6 @@ var lastMethod;
    },
 ].forEach((testSource) =>{
    assertObject((lastMethod = testSource.method || lastMethod).apply(this,
-   testSource.input), testSource.expected, testSource.desc); 
+   testSource.input), testSource.expected, testSource.desc);
    console.log(`\x1b[36m[PASSED] ${testSource.desc}\x1b[0m`);
 });

@@ -8,7 +8,7 @@
 object member. Similar to key of object (Object.keys) but "deep" key. Provides
 recursive access to object member.
 
-```
+```javascript
 const DeepKey = require('deep-key');
 var obj = { shallow: { deep: { deeper: { deepest: 0 } } } };
 console.log(DeepKey.keys(obj));
@@ -30,7 +30,20 @@ Get all deep keys recursively.
 
 ```
 DeepKey.keys(obj);
+DeepKey.keys(obj, depth);
 ```
+
+Specify `depth` to limit enumeration by depth.
+
+```javascript
+var obj = { depth1: { depth2: { depth3: { } } } }
+console.log(DeepKey.keys(obj, 2));
+// [ ['depth1'], ['depth1', 'depth2'] ]
+```
+
+Note that all keys will be enumerated if zero or negative value is specified for
+`depth`.
+
 
 ### get
 
@@ -112,10 +125,10 @@ On object tree traversing, if intermediate inextensible object is found (number,
 string, seald object and so on) exception `/^Inextensible object:/` be thrown.
 Because such a inextensible object cannot have its member.
 
-```
+```javascript
 var obj = { shallow: { deep: 1 } };
 
-DeepKey.set(obj, [ 'shallow', 'deep' ], 2); 
+DeepKey.set(obj, [ 'shallow', 'deep' ], 2);
 // Of course, success
 
 DeepKey.set(obj, [ 'shallow', 'deep', 'deeper' ], 3);

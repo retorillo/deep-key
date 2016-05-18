@@ -1,9 +1,10 @@
 'use strict';
 
-function* iterateKeys(obj) {
+function* iterateKeys(obj, depth) {
+   if (depth == 0) return;
    for (var key of Object.keys(obj)) {
       yield [ key ];
-      for (var subkeys of iterateKeys(obj[key])) {
+      for (var subkeys of iterateKeys(obj[key], depth - 1)) {
          subkeys.splice(0, 0, key);
          yield subkeys;
       }
@@ -35,14 +36,14 @@ function accessor(obj, deepkey) {
       set: v => { return (t[0])[t[1]] = v;  },
    }
 }
-function keys(obj) {
+function keys(obj, depth) {
    var array = [];
-   for (var path of iterateKeys(obj))
+   for (var path of iterateKeys(obj, depth || -1))
       array.push(path);
    return array;
 }
 function rename(obj, src, dest) {
-   return set(obj, dest, del(obj, src)); 
+   return set(obj, dest, del(obj, src));
 }
 function del(obj, deepkey) {
    var t = traverse(obj, deepkey, false);
