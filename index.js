@@ -1,7 +1,7 @@
 'use strict';
 
 function* iterateKeys(obj, depth) {
-   if (depth == 0) return;
+   if (obj === null || obj === undefined || depth == 0) return;
    for (var key of Object.keys(obj)) {
       yield [ key ];
       for (var subkeys of iterateKeys(obj[key], depth - 1)) {

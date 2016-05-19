@@ -48,7 +48,7 @@ var lastMethod;
    {
       desc: 'enumeration deep keys',
       method: DeepKey.keys,
-      input: [{ shallow: { deep: { deeper1: {}, deeper2: { deepest: 0 } } } }],
+      input: [{ shallow: { deep: { deeper1: {}, deeper2: { deepest: undefined } } } }],
       expected: [
           ['shallow'],
           ['shallow', 'deep'],
