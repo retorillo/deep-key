@@ -94,10 +94,16 @@ var lastMethod;
       expected: 'value',
    },
    {
-      desc: 'touching members',
+      desc: 'touching members (non-empty object)',
       method: (obj, deepkeys) => { for (var k of deepkeys) DeepKey.touch(obj, k); return obj  },
       input: [ { s1: { d1: 'd1' }  }, [ ['s1'], [ 's1', 'd1' ], [ 's1', 'd2' ], [ 's2', 'd3' ] ]],
       expected: { s1: { d1: 'd1', d2: undefined }, s2: { d3: undefined } },
+   },
+   {
+      desc: 'touching members (empty object)',
+      method: (obj, deepkeys) => { for (var k of deepkeys) DeepKey.touch(obj, k); return obj  },
+      input: [ { }, [ ['s1'], [ 's1', 'd1' ], [ 's1', 'd2' ], [ 's2', 'd3' ] ]],
+      expected: { s1: { d1: undefined, d2: undefined }, s2: { d3: undefined } },
    },
    {
       desc: 'checking existence',

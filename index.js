@@ -17,7 +17,8 @@ function traverse(obj, deepkey, force) {
          return [leaf, deepkey[c]];
       }
       else {
-         if (!leaf.propertyIsEnumerable(deepkey[c]))
+         if (!leaf.propertyIsEnumerable(deepkey[c])
+            || leaf[deepkey[c]] === undefined)
             if (force)
                leaf[deepkey[c]] = { };
             else
