@@ -64,6 +64,17 @@ DeepKey.set(obj, deepkey, value);
 Whether such a member exits or not, member is always overwritten or created. To
 prevent this, use `exists` to check its existence.
 
+### touch
+
+Create object member that is pointed by deep key if does not exist, and set
+`undefined` for its value. If already exists, value never be changed.
+
+```
+DeepKey.touch(obj, deepkey);
+```
+
+Returns value of object member.
+
 ### accessor
 
 Get accessor of object member that is pointed by deep key.

@@ -1,17 +1,47 @@
 const DeepKey = require('../');
 const assert = require('assert');
 
+// JSON.stringify cannnot output:
+// - Members which value is undefined although its key exists. 
+// - Extended members of array.
+// Use the following method alternatively, not a JSON, 
+// but useful for diagnose entire object keys and values.
+function keyBasedStringify(obj) {
+   if (obj === undefined) return 'undefined';
+   else if (obj === null) return 'null';
+   else if (typeof(obj) === 'number') return k.toString();
+   else if (Object.isExtensible(obj)) {
+      var str = [ '{' ];
+      for (var k of Object.keys(obj)) {
+         if (str.length > 1)
+            str.push(',')
+         str.push(`${k}:${keyBasedStringify(obj[k])}`);
+      }
+      str.push('}');
+      return str.join('');
+   }
+   else return ["'", obj.toString().replace(/'/g, "\\'"), "'"].join('');
+   // TODO: handle another metacharacters:  \n \r \t ...
+}
+
+
 function assertObject(object, expected, desc) {
    try {
-      assert(JSON.stringify(object) == JSON.stringify(expected));
+      assert(keyBasedStringify(object) == keyBasedStringify(expected));
+      console.log(`\x1b[36m[PASSING] ${desc}\x1b[0m`);
+      console.log(`\x1b[33m RESULT: ${keyBasedStringify(expected)}\x1b[0m`)
    }
    catch (e) {
-      console.log(`\x1b[31m[FAILED] ${desc}\x1b[0m`)
-      console.log(`\x1b[31m   RESULT: ${JSON.stringify(object)}\x1b[0m`)
-      console.log(`\x1b[31m EXPECTED: ${JSON.stringify(expected)}\x1b[0m`)
+      console.log(`\x1b[31m[FAILING] ${desc}\x1b[0m`)
+      console.log(`\x1b[31m RESULT: ${keyBasedStringify(object)}\x1b[0m`)
+      console.log(`\x1b[31m EXPECTED: ${keyBasedStringify(expected)}\x1b[0m`)
       throw e;
    }
 }
+
+console.log([`\x1b[31m`,
+`NOTE: Test result is key-based non-standard format to`,
+` diagnose exactly object structure.\x1b[0m`,].join(''));
 
 var lastMethod;
 [
@@ -64,6 +94,12 @@ var lastMethod;
       expected: 'value',
    },
    {
+      desc: 'touching members',
+      method: (obj, deepkeys) => { for (var k of deepkeys) DeepKey.touch(obj, k); return obj  },
+      input: [ { s1: { d1: 'd1' }  }, [ ['s1'], [ 's1', 'd1' ], [ 's1', 'd2' ], [ 's2', 'd3' ] ]],
+      expected: { s1: { d1: 'd1', d2: undefined }, s2: { d3: undefined } },
+   },
+   {
       desc: 'checking existence',
       method: DeepKey.exists,
       input: [ { shallow: { deep: { deepest: 'value' } } } , ['shallow', 'deep', 'deepest'] ],
@@ -105,5 +141,4 @@ var lastMethod;
 ].forEach((testSource) =>{
    assertObject((lastMethod = testSource.method || lastMethod).apply(this,
    testSource.input), testSource.expected, testSource.desc);
-   console.log(`\x1b[36m[PASSED] ${testSource.desc}\x1b[0m`);
 });

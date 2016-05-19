@@ -60,6 +60,10 @@ function get(obj, deepkey) {
    var t = traverse(obj, deepkey, false);
    return t ? (t[0])[t[1]] : undefined;
 }
+function touch(obj, deepkey) {
+   var t = traverse(obj, deepkey, true);
+   return (t[0])[t[1]] = (t[0])[t[1]];
+}
 function exists(obj, deepkey) {
    var t = traverse(obj, deepkey, false);
    return t ? t[0].propertyIsEnumerable(t[1]) : false;
@@ -68,6 +72,7 @@ module.exports = {
    keys: keys,
    set: set,
    get: get,
+   touch: touch,
    rename: rename,
    delete: del,
    exists: exists,
