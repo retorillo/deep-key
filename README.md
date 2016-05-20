@@ -12,7 +12,7 @@ recursive access to object member.
 const DeepKey = require('deep-key');
 var obj = { shallow: { deep: { deeper: { deepest: 0 } } } };
 console.log(DeepKey.keys(obj));
-// [['shallow'], ['shallow', 'deep'], ['shallow', 'deep', 'deeper']]
+// [['shallow'], ['shallow', 'deep'], ['shallow', 'deep', 'deeper'] ... ]
 ```
 
 ## Install

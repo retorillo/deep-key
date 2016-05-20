@@ -1,6 +1,6 @@
 {
   "name": "deep-key",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "Similar to key of object (Object.keys) but deep key. Provides recursive access to object member.",
   "main": "index.js",
   "directories": {
