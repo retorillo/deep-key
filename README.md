@@ -10,9 +10,9 @@ recursive access to object member.
 
 ```javascript
 const DeepKey = require('deep-key');
-var obj = { shallow: { deep: { deeper: { deepest: 0 } } } };
+var obj = { p1: { p2: { p3: { p4: 0 } } } };
 DeepKey.keys(obj);
-// [['shallow'], ['shallow', 'deep'], ['shallow', 'deep', 'deeper'] ... ]
+// [['p1'], ['p1', 'p2'], ['p1', 'p2', 'p3'] ... ]
 ```
 
 ## Install
@@ -68,7 +68,7 @@ var obj = {
 
 console.log(DeepKey.keys(obj, {
   filter: (deepkey, value) => { 
-    return !/^exclude\d+/.test(deepkey.join('.'));
+    return !/skip\d+/.test(deepkey.join('.'));
   }
 });
 // [ ['prop1'], ['prop1', 'prop2'], ['prop3'], ['prop4'] ]
@@ -206,14 +206,14 @@ string, seald object and so on) exception `/^Inextensible object:/` be thrown.
 Because such a inextensible object cannot have its member.
 
 ```javascript
-var obj = { shallow: { deep: 1 } };
+var obj = { prop1: { prop2: 1 } };
 
-DeepKey.set(obj, [ 'shallow', 'deep' ], 2);
+DeepKey.set(obj, [ 'prop1', 'prop2' ], 2);
 // Of course, success
 
-DeepKey.set(obj, [ 'shallow', 'deep', 'deeper' ], 3);
-// 'Inextensible object: shallow.deep' is thrown.
-// Because value 2 of shallow.deep is inextensible.
+DeepKey.set(obj, [ 'prop1', 'prop2', 'prop3' ], 3);
+// 'Inextensible object: prop1.prop2' is thrown.
+// Because value 2 of prop1.prop2 is inextensible.
 // Note that Object.isExtensible(2) returns false.
 ```
 
