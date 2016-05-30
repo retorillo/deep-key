@@ -27,7 +27,7 @@ npm install --save deep-key
 
 Get all deep keys recursively.
 
-```
+```javascript
 DeepKey.keys(obj);
 DeepKey.keys(obj, option); 
 ```
@@ -47,7 +47,7 @@ console.log(DeepKey.keys(obj, { depth: 2 }));
 If merely want to specify `depth` option, can directly pass into second argument
 in place of `option`.
 
-```
+```javascript
 DeepKey.keys(obj, depth);
 ```
 
@@ -85,18 +85,18 @@ For each member, `filter` function is called back by passing two arguments:
 If merely want to specify `filter` option, can directly pass into second
 argument in place of `option`.
 
-```
+```javascript
 DeepKey.keys(obj, filter);
 ```
 
 ##### noindex
 
-Specify `noarray` to prevent key enumeration of `Array`.
+Specify `noarray` to suppress index-enumeration of `Array`.
 
 In JavaScript world, `Array` is also an object and its index is the kind of
 object-key. Try the following code:
 
-```
+```javascript
 Object.keys(['one', 'two', 'three']);
 // [ '0', '1', '2' ]
 ```
@@ -107,7 +107,7 @@ In most case, this behavior is an undesirable overboundance.
 **NOTE:** `Array` is also an extensible object. Note that its extended member,
 regardless of `noindex`, will be always enumerated in constrast with index.
 
-```
+```javascript
 var obj = { array: [1,2,3], val: 4 };
 obj.array.five = 5;
 DeepKey.keys(obj, { noindex: true });
@@ -118,7 +118,7 @@ DeepKey.keys(obj, { noindex: true });
 
 Get value of object member that is pointed by deep key.
 
-```
+```javascript
 DeepKey.get(obj, deepkey);
 ```
 
@@ -126,7 +126,7 @@ DeepKey.get(obj, deepkey);
 
 Set value for object member that is pointed by deep key.
 
-```
+```javascript
 DeepKey.set(obj, deepkey, value);
 ```
 
@@ -138,7 +138,7 @@ prevent this, use `exists` to check its existence.
 Create object member that is pointed by deep key if does not exist, and set
 `undefined` for its value. If already exists, value never be changed.
 
-```
+```javascript
 DeepKey.touch(obj, deepkey);
 ```
 
@@ -149,7 +149,7 @@ Returns value of object member.
 Get accessor of object member that is pointed by deep key.
 Accessor has `get` and `set` methods.
 
-```
+```javascript
 DeepKey.accessor(obj, deepkey);
 ```
 
@@ -165,7 +165,7 @@ created. (Initial value is `undefined`).
 Remove object member that is pointed by deep key.
 Equivalent to using `delete` keyword.
 
-```
+```javascript
 DeepKey.delete(obj, deepkey);
 ```
 
@@ -175,7 +175,7 @@ Returns value of object member that is pointed by deep key.
 
 Rename key of object member by using current and new deep keys.
 
-```
+```javascript
 DeepKey.rename(obj, src, dest);
 ```
 
@@ -189,7 +189,7 @@ Returns value of object member that is pointed by deep key.
 
 Check existence of object member that is pointed by deep key.
 
-```
+```javascript
 DeepKey.exists(obj, deepkey);
 ```
 
