@@ -1,14 +1,17 @@
 'use strict';
 
-function* iterateKeys(obj, depth) {
-  if (obj === null || obj === undefined || depth == 0 ||
-    typeof(obj) === 'string') return;
+function* iterateKeys(obj, depth, noindex, filter, parent) {
+  if (obj === null || obj === undefined) return;
+  if (depth > 0 && parent && parent.length >= depth) return;
+  if (typeof(obj) === 'string') return;
+  parent = parent || [];
   for (var key of Object.keys(obj)) {
-    yield [ key ];
-    for (var subkeys of iterateKeys(obj[key], depth - 1)) {
-      subkeys.splice(0, 0, key);
-      yield subkeys;
-    }
+    if (noindex && obj instanceof Array && /^[0-9]+$/.test(key)) continue;
+    var child = parent.slice(0);
+    child.push(key);
+    if (filter && !filter(child, obj[key])) continue;
+    yield child;
+    yield* iterateKeys(obj[key], depth, noindex, filter, child);
   }
 }
 function traverse(obj, deepkey, force) {
@@ -38,9 +41,19 @@ function accessor(obj, deepkey) {
     set: v => { return (t[0])[t[1]] = v;  },
   }
 }
-function keys(obj, depth) {
+function keys(obj, option) {
+  var depth, noindex, filter;
+  if (typeof option === 'number')
+    depth = option;
+  else if (typeof option === 'function')
+    filter = filter;
+  else if (typeof option === 'object') {
+    depth = option.depth;
+    noindex = option.noindex;
+    filter = option.filter;
+  }
   var array = [];
-  for (var path of iterateKeys(obj, depth || -1))
+  for (var path of iterateKeys(obj, depth || 0, noindex, filter))
     array.push(path);
   return array;
 }

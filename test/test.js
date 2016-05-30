@@ -58,7 +58,7 @@ var lastMethod;
     ],
   },
   {
-    desc: 'enumeration deep keys (depth is specified)',
+    desc: 'enumeration deep keys (with depth)',
     method: DeepKey.keys,
     input: [{ shallow: { deep: { deeper1: {}, deeper2: { deepest: 0 } } } }, 2],
     expected: [
@@ -67,6 +67,34 @@ var lastMethod;
        // ['shallow', 'deep', 'deeper1'],
        // ['shallow', 'deep', 'deeper2'],
        // ['shallow', 'deep', 'deeper2', 'deepest'],
+    ],
+  },
+  {
+    desc: 'enumeration deep keys (with filter)',
+    method: DeepKey.keys,
+    input: [{ shallow: { deep: { exclude: {}, deeper: { exclude: { deepest: 1 } } } } }, {
+    filter: (deepkey, value) => { return !/exclude/.test(deepkey.join('.'));  } }],
+    expected: [
+       ['shallow'],
+       ['shallow', 'deep'],
+       ['shallow', 'deep', 'deeper'],
+    ],
+  },
+  {
+    desc: 'enumeration deep keys (with noindex)',
+    method: (obj, option) => {
+      obj.shallow.deep.array1.memberOfArray = 0;
+      return DeepKey.keys(obj, option);
+    },
+    input: [{ shallow: { deep: { array1: [1,2,3], deeper: { array2: [1,2,3]} } } },
+      { noindex: true  }],
+    expected: [
+       ['shallow'],
+       ['shallow', 'deep'],
+       ['shallow', 'deep', 'array1'],
+       ['shallow', 'deep', 'array1', 'memberOfArray'],
+       ['shallow', 'deep', 'deeper'],
+       ['shallow', 'deep', 'deeper', 'array2'],
     ],
   },
   {

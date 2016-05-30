@@ -11,7 +11,7 @@ recursive access to object member.
 ```javascript
 const DeepKey = require('deep-key');
 var obj = { shallow: { deep: { deeper: { deepest: 0 } } } };
-console.log(DeepKey.keys(obj));
+DeepKey.keys(obj);
 // [['shallow'], ['shallow', 'deep'], ['shallow', 'deep', 'deeper'] ... ]
 ```
 
@@ -23,27 +23,96 @@ npm install --save deep-key
 
 ## Functions
 
-
 ### keys
 
 Get all deep keys recursively.
 
 ```
 DeepKey.keys(obj);
-DeepKey.keys(obj, depth);
+DeepKey.keys(obj, option); 
 ```
+
+#### options
+
+##### depth
 
 Specify `depth` to limit enumeration by depth.
 
 ```javascript
-var obj = { depth1: { depth2: { depth3: { } } } }
-console.log(DeepKey.keys(obj, 2));
-// [ ['depth1'], ['depth1', 'depth2'] ]
+var obj = { prop1: { prop2: { prop3: { } } } }
+console.log(DeepKey.keys(obj, { depth: 2 }));
+// [ ['prop1'], ['prop1', 'prop2'] ]
+```
+
+If merely want to specify `depth` option, can directly pass into second argument
+in place of `option`.
+
+```
+DeepKey.keys(obj, depth);
 ```
 
 Note that all keys will be enumerated if zero or negative value is specified for
 `depth`.
 
+##### filter
+
+Specify `filter` to limit enumeration by your custom function.
+
+```javascript
+var obj = {
+  prop1: { prop2: {} }
+  prop3: { skip1: {} }, 
+  prop4: 'p4', 
+  skip2: 'e2' 
+}
+
+console.log(DeepKey.keys(obj, {
+  filter: (deepkey, value) => { 
+    return !/^exclude\d+/.test(deepkey.join('.'));
+  }
+});
+// [ ['prop1'], ['prop1', 'prop2'], ['prop3'], ['prop4'] ]
+```
+
+For each member, `filter` function is called back by passing two arguments:
+
+- `deepkey` : deep key of member
+- `value` : value of member that is pointed by `deepkey`
+
+`filter` function must return `true` in order to include in enumeration,
+`false` otherwise.
+
+If merely want to specify `filter` option, can directly pass into second
+argument in place of `option`.
+
+```
+DeepKey.keys(obj, filter);
+```
+
+##### noindex
+
+Specify `noarray` to prevent key enumeration of `Array`.
+
+In JavaScript world, `Array` is also an object and its index is the kind of
+object-key. Try the following code:
+
+```
+Object.keys(['one', 'two', 'three']);
+// [ '0', '1', '2' ]
+```
+
+Therefore, `keys` of this package also enumerate keys of `Array` by default.
+In most case, this behavior is an undesirable overboundance.
+
+**NOTE:** `Array` is also an extensible object. Note that its extended member,
+regardless of `noindex`, will be always enumerated in constrast with index.
+
+```
+var obj = { array: [1,2,3], val: 4 };
+obj.array.five = 5;
+DeepKey.keys(obj, { noindex: true });
+// [ ['array'], ['array', 'five'], ['val'] ]
+```
 
 ### get
 
