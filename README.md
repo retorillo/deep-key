@@ -12,7 +12,7 @@ recursive access to object member.
 const DeepKey = require('deep-key');
 var obj = { p1: { p2: { p3: { p4: 0 } } } };
 DeepKey.keys(obj);
-// [['p1'], ['p1', 'p2'], ['p1', 'p2', 'p3'] ... ]
+// [ ['p1'], ['p1', 'p2'], ['p1', 'p2', 'p3'] ... ]
 ```
 
 ## Install
@@ -91,7 +91,7 @@ DeepKey.keys(obj, filter);
 
 ##### noindex
 
-Specify `noarray` to suppress index-enumeration of `Array`.
+Specify `noindex` to suppress index-enumeration of `Array`.
 
 In JavaScript world, `Array` is also an object and its index is the kind of
 object-key. Try the following code:
@@ -135,11 +135,15 @@ prevent this, use `exists` to check its existence.
 
 ### touch
 
-Create object member that is pointed by deep key if does not exist, and set
-`undefined` for its value. If already exists, value never be changed.
+Create object member that is pointed by deep key if does not exist. Similar to
+`set` method, but value never be changed if member already exist.
+
+For initial value of new member, third argument `value` is used if present,
+otherwise `undefined` is used.
 
 ```javascript
 DeepKey.touch(obj, deepkey);
+DeepKey.touch(obj, deepkey, value);
 ```
 
 Returns value of object member.
@@ -203,7 +207,7 @@ But, there are an exception that is thrown in special case.
 
 On object tree traversing, if intermediate inextensible object is found (number,
 string, seald object and so on) exception `/^Inextensible object:/` be thrown.
-Because such a inextensible object cannot have its member.
+Because such a inextensible object cannot have extended members.
 
 ```javascript
 var obj = { prop1: { prop2: 1 } };

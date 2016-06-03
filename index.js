@@ -75,9 +75,12 @@ function get(obj, deepkey) {
   var t = traverse(obj, deepkey, false);
   return t ? (t[0])[t[1]] : undefined;
 }
-function touch(obj, deepkey) {
+function touch(obj, deepkey, value) {
   var t = traverse(obj, deepkey, true);
-  return (t[0])[t[1]] = (t[0])[t[1]];
+  if (!t[0].propertyIsEnumerable(t[1]))
+    return (t[0])[t[1]] = value;
+  else
+    return (t[0])[t[1]];
 }
 function exists(obj, deepkey) {
   var t = traverse(obj, deepkey, false);

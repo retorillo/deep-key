@@ -124,14 +124,36 @@ var lastMethod;
   {
     desc: 'touching members (non-empty object)',
     method: (obj, deepkeys) => { for (var k of deepkeys) DeepKey.touch(obj, k); return obj  },
-    input: [ { s1: { d1: 'd1' }  }, [ ['s1'], [ 's1', 'd1' ], [ 's1', 'd2' ], [ 's2', 'd3' ] ]],
+    input: [ { s1: { d1: 'd1' }  }, [
+      [ 's1' ],
+      [ 's1', 'd1' ],
+      [ 's1', 'd2' ],
+      [ 's2', 'd3' ]
+    ]],
     expected: { s1: { d1: 'd1', d2: undefined }, s2: { d3: undefined } },
   },
   {
     desc: 'touching members (empty object)',
-    method: (obj, deepkeys) => { for (var k of deepkeys) DeepKey.touch(obj, k); return obj  },
-    input: [ { }, [ ['s1'], [ 's1', 'd1' ], [ 's1', 'd2' ], [ 's2', 'd3' ] ]],
+    input: [ { }, [ 
+      [ 's1' ], 
+      [ 's1', 'd1' ],
+      [ 's1', 'd2' ],
+      [ 's2', 'd3' ]
+    ]],
     expected: { s1: { d1: undefined, d2: undefined }, s2: { d3: undefined } },
+  },
+  {
+    desc: 'touching member (never overwrite)',
+    method: (obj, deepkey, value) => { DeepKey.touch(obj, deepkey, value); return obj; },
+    input: [ { s1: { d1: { d2: { d3: 'poor' } } } },
+       ['s1', 'd1', 'd2', 'd3' ] , 'awesome'],
+    expected: { s1: { d1: { d2: { d3: 'poor' } } } },
+  },
+  {
+    desc: 'touching member (must overwrite)',
+    input: [ { s1: { d1: { d2: {} } } },
+       ['s1', 'd1', 'd2', 'd3' ] , 'awesome'],
+    expected: { s1: { d1: { d2: { d3: 'awesome' } } } },
   },
   {
     desc: 'checking existence',
