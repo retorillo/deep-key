@@ -221,7 +221,7 @@ DeepKey.set(obj, [ 'prop1', 'prop2', 'prop3' ], 3);
 ```
 
 **NOTE:** Members of exsisting intermediate sealed object can be readable and
-writeable because "seal" does not prevent to change value of its member.
+writable because "seal" does not prevent to change value of its member.
 
 ```javascript
 var obj = { { sealed: { present: false } } };

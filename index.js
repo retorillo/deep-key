@@ -32,7 +32,7 @@ function traverse(obj, deepkey, force) {
           return undefined;
       }
       leaf = leaf[deepkey[c]];
-      // intermediate non-null object must be object or function
+      // intermediate object must be non-null object or function
       // note that typeof(null) returns 'object'
       if (leaf === 'null' || (typeof(leaf) !== 'object' && typeof(leaf) !== 'function'))
         throw `Inextensible object: ${ deepkey.slice(0, c + 1).join('.') }`;
