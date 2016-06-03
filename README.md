@@ -199,15 +199,15 @@ DeepKey.exists(obj, deepkey);
 
 ## Handling inextensible object
 
-Whether specified deep key is exists or not, `DeepKey` automatically overwrite
+Whether specified member is present or not, `DeepKey` automatically overwrite
 or create member recursively, therefore exception handing is not required in
 most cases.
 
 But, there are an exception that is thrown in special case.
 
-On object tree traversing, if intermediate inextensible object is found (number,
-string, seald object and so on) exception `/^Inextensible object:/` be thrown.
-Because such a inextensible object cannot have extended members.
+On object tree traversing, if intermediate inextensible object is found (null,
+number, string, seald object, and so on), an error `/^Inextensible object:/` be
+thrown. Because such an inextensible object cannot have new extended members.
 
 ```javascript
 var obj = { prop1: { prop2: 1 } };
@@ -218,7 +218,17 @@ DeepKey.set(obj, [ 'prop1', 'prop2' ], 2);
 DeepKey.set(obj, [ 'prop1', 'prop2', 'prop3' ], 3);
 // 'Inextensible object: prop1.prop2' is thrown.
 // Because value 2 of prop1.prop2 is inextensible.
-// Note that Object.isExtensible(2) returns false.
+```
+
+**NOTE:** Members of exsisting intermediate sealed object can be readable and
+writeable because "seal" does not prevent to change value of its member.
+
+```javascript
+var obj = { { sealed: { present: false } } };
+Object.seal(obj.sealed);
+DeepKey.set(obj, ['sealed', 'present'], true);
+DeepKey.get(obj, ['sealed', 'present']);
+// true
 ```
 
 ## License

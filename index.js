@@ -21,15 +21,21 @@ function traverse(obj, deepkey, force) {
       return [leaf, deepkey[c]];
     }
     else {
-      if (!leaf.propertyIsEnumerable(deepkey[c])
-        || leaf[deepkey[c]] === undefined)
-        if (force)
+      if (!(deepkey[c] in leaf) || leaf[deepkey[c]] === undefined) {
+        if (force) {
+          // if creating intermediate object, its parent must be extensible.
+          if (!Object.isExtensible(leaf))
+            throw `Inextensible object: ${ deepkey.slice(0, c + 1).join('.') }`;
           leaf[deepkey[c]] = { };
+        }
         else
           return undefined;
+      }
       leaf = leaf[deepkey[c]];
-      if (!Object.isExtensible(leaf))
-        throw `Inextensible object: ${ deepkey.slice(0, c + 1).join('.') }`
+      // intermediate non-null object must be object or function
+      // note that typeof(null) returns 'object'
+      if (leaf === 'null' || (typeof(leaf) !== 'object' && typeof(leaf) !== 'function'))
+        throw `Inextensible object: ${ deepkey.slice(0, c + 1).join('.') }`;
     }
   return undefined;
 }
@@ -69,6 +75,8 @@ function del(obj, deepkey) {
 }
 function set(obj, deepkey, value) {
   var t = traverse(obj, deepkey, true);
+  if (!(t[1] in t[0]) && !Object.isExtensible(t[0]))
+    throw `Inextensible object: ${ deepkey.slice(0, deepkey.length - 1).join('.') }`;
   return (t[0])[t[1]] = value;
 }
 function get(obj, deepkey) {
@@ -77,8 +85,11 @@ function get(obj, deepkey) {
 }
 function touch(obj, deepkey, value) {
   var t = traverse(obj, deepkey, true);
-  if (!t[0].propertyIsEnumerable(t[1]))
+  if (!(t[1] in t[0])) {
+    if (!Object.isExtensible(t[0]))
+      throw `Inextensible object: ${ deepkey.slice(0, deepkey.length -1).join('.') }`;
     return (t[0])[t[1]] = value;
+  }
   else
     return (t[0])[t[1]];
 }
