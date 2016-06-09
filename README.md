@@ -34,9 +34,24 @@ DeepKey.keys(obj, option);
 
 #### options
 
+##### all
+
+`all` option allows to get all member enumeration including unenumerable members. 
+
+```javascript
+var obj = { enum: 'e', };
+Object.defineProperty(obj, 'unenum', { value: 'u' });
+obj.propertyIsEnumerable('unenum');
+// false
+DeepKeys.keys(obj);
+// [ ['enum'] ]
+DeepKeys.keys(obj, { all: true });
+// [ ['enum'], ['unenum'] ]
+```
+
 ##### depth
 
-Specify `depth` to limit enumeration by depth.
+`depth` option allows to limit enumeration by depth.
 
 ```javascript
 var obj = { prop1: { prop2: { prop3: { } } } }
@@ -56,7 +71,7 @@ Note that all keys will be enumerated if zero or negative value is specified for
 
 ##### filter
 
-Specify `filter` to limit enumeration by your custom function.
+`filter` option allows to limit enumeration by your custom function.
 
 ```javascript
 var obj = {
@@ -74,10 +89,11 @@ console.log(DeepKey.keys(obj, {
 // [ ['prop1'], ['prop1', 'prop2'], ['prop3'], ['prop4'] ]
 ```
 
-For each member, `filter` function is called back by passing two arguments:
+For each member, `filter` function is called back by passing the following three arguments:
 
 - `deepkey` : deep key of member
 - `value` : value of member that is pointed by `deepkey`
+- `enumerable` : whether member is enumerable (`propertyIsEnumerable`)
 
 `filter` function must return `true` in order to include in enumeration,
 `false` otherwise.
@@ -91,21 +107,28 @@ DeepKey.keys(obj, filter);
 
 ##### noindex
 
-Specify `noindex` to suppress index-enumeration of `Array`.
+`noindex` option allows to suppress index-enumeration of `Array`.
 
-In JavaScript world, `Array` is also an object and its index is the kind of
-object-key. Try the following code:
+In JavaScript world, `Array` is also object-type and its indexes are `keys` of object. 
+
+> An Array object is an exotic object that gives special treatment to array index property keys
+> ([ES6 9.4.2](http://www.ecma-international.org/ecma-262/6.0/#sec-array-exotic-objects))
+
+Try the following code:
 
 ```javascript
+typeof [];
+// 'object'
 Object.keys(['one', 'two', 'three']);
 // [ '0', '1', '2' ]
 ```
 
 Therefore, `keys` of this package also enumerate keys of `Array` by default.
 In most case, this behavior is an undesirable overboundance.
+`noindex` option can suppress this.
 
-**NOTE:** `Array` is also an extensible object. Note that its extended member,
-regardless of `noindex`, will be always enumerated in constrast with index.
+**NOTE:** `Array` is also extensible. Note that its extended member will be
+always enumerated, regardless of `noindex` option.
 
 ```javascript
 var obj = { array: [1,2,3], val: 4 };

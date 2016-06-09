@@ -1,17 +1,17 @@
 'use strict';
 
-function* iterateKeys(obj, depth, noindex, filter, parent) {
+function* iterateKeys(obj, all, depth, noindex, filter, parent) {
   if (obj === null || obj === undefined) return;
   if (depth > 0 && parent && parent.length >= depth) return;
   if (typeof(obj) === 'string') return;
   parent = parent || [];
-  for (var key of Object.keys(obj)) {
+  for (var key of all ? Object.getOwnPropertyNames(obj) : Object.keys(obj)) {
     if (noindex && obj instanceof Array && /^[0-9]+$/.test(key)) continue;
     var child = parent.slice(0);
     child.push(key);
-    if (filter && !filter(child, obj[key])) continue;
+    if (filter && !filter(child, obj[key], !all || obj.propertyIsEnumerable(key))) continue;
     yield child;
-    yield* iterateKeys(obj[key], depth, noindex, filter, child);
+    yield* iterateKeys(obj[key], all, depth, noindex, filter, child);
   }
 }
 function traverse(obj, deepkey, force) {
@@ -48,18 +48,19 @@ function accessor(obj, deepkey) {
   }
 }
 function keys(obj, option) {
-  var depth, noindex, filter;
+  var all, depth, noindex, filter;
   if (typeof option === 'number')
     depth = option;
   else if (typeof option === 'function')
     filter = filter;
   else if (typeof option === 'object') {
+    all = option.all;
     depth = option.depth;
     noindex = option.noindex;
     filter = option.filter;
   }
   var array = [];
-  for (var path of iterateKeys(obj, depth || 0, noindex, filter))
+  for (var path of iterateKeys(obj, all, depth || 0, noindex, filter))
     array.push(path);
   return array;
 }

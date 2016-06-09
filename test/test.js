@@ -10,9 +10,9 @@ function keyBasedStringify(obj) {
   if (obj === undefined) return 'undefined';
   else if (obj === null) return 'null';
   else if (typeof(obj) === 'number') return obj.toString();
-  else if (Object.isExtensible(obj)) {
+  else if (typeof(obj) === 'object') {
     var str = [ '{' ];
-    for (var k of Object.keys(obj)) {
+    for (var k of Object.getOwnPropertyNames(obj)) {
       if (str.length > 1)
         str.push(',')
       str.push(`${k}:${keyBasedStringify(obj[k])}`);
@@ -61,6 +61,20 @@ var lastMethod;
     ],
   },
   {
+    desc: 'enumeration deep keys (with all)',
+    method: () => {
+      var obj = {};
+      Object.defineProperty(obj, 'p1', { value: {} });
+      Object.defineProperty(obj.p1, 'p2', { value: 'test' });
+      return DeepKey.keys(obj, { all: true });
+    },
+    input: [ ],
+    expected: [
+       ['p1'],
+       ['p1', 'p2'],
+    ],
+  },
+  {
     desc: 'enumeration deep keys (with depth)',
     method: DeepKey.keys,
     input: [{ shallow: { deep: { deeper1: {}, deeper2: { deepest: 0 } } } }, 2],
@@ -82,6 +96,18 @@ var lastMethod;
        ['shallow', 'deep'],
        ['shallow', 'deep', 'deeper'],
     ],
+  },
+  {
+    desc: 'enumeration deep keys (with filter and all)',
+    method: (obj, option) => {
+      Object.defineProperty(obj, 'unenum', { value: 'u' });
+      return DeepKey.keys(obj, option);
+    },
+    input: [ { enumerable: 'e' }, {
+        all: true,
+        filter: (deepkey, value, enumerable) => { return !enumerable },
+      }],
+    expected: [ ['unenum'], ],
   },
   {
     desc: 'enumeration deep keys (with noindex)',
