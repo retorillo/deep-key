@@ -24,27 +24,21 @@ function keyBasedStringify(obj) {
   // TODO: handle another metacharacters:  \n \r \t ...
 }
 
-function assertObject(object, expected, desc) {
-  try {
-    if (typeof(object) === 'string' && expected instanceof RegExp)
-      assert(expected.test(object));
-    else
-      assert(keyBasedStringify(object) === keyBasedStringify(expected));
-
-    console.log(`\x1b[36m[PASSING] ${desc}\x1b[0m`);
-    console.log(`\x1b[33m RESULT: ${keyBasedStringify(object)}\x1b[0m`)
-  }
-  catch (e) {
-    console.log(`\x1b[31m[FAILING] ${desc}\x1b[0m`)
-    console.log(`\x1b[31m RESULT: ${keyBasedStringify(object)}\x1b[0m`)
-    console.log(`\x1b[31m EXPECTED: ${keyBasedStringify(expected)}\x1b[0m`)
-    throw e;
-  }
+function assertForMoca(object, expected, desc) {
+  describe(desc, () => {
+    if (typeof(object) === 'string' && expected instanceof RegExp) {
+      it(`to match: ${expected}`, () => {
+        assert(expected.test(object));
+      });
+    }
+    else {
+      var expected_str = keyBasedStringify(expected);
+      it(`to be: ${expected_str}`, () => {
+        assert.equal(keyBasedStringify(object), expected_str);
+      });
+    }
+  });
 }
-
-console.log([`\x1b[31m`,
-`NOTE: Test result is key-based non-standard format to`,
-` diagnose exactly object structure.\x1b[0m`,].join(''));
 
 var lastMethod;
 [
@@ -273,6 +267,6 @@ var lastMethod;
     expected: /^TypeError:/,
   },
 ].forEach((testSource) =>{
-  assertObject((lastMethod = testSource.method || lastMethod).apply(this,
-  testSource.input), testSource.expected, testSource.desc);
+    lastMethod = testSource.method || lastMethod;
+    assertForMoca(lastMethod.apply(this, testSource.input), testSource.expected, testSource.desc);
 });

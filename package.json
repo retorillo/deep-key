@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "node test/test.js"
+    "test": "node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha"
   },
   "repository": {
     "type": "git",
@@ -29,5 +29,10 @@
   "bugs": {
     "url": "https://github.com/retorillo/deep-key/issues"
   },
-  "homepage": "https://github.com/retorillo/deep-key#readme"
+  "homepage": "https://github.com/retorillo/deep-key#readme",
+  "devDependencies": {
+    "coveralls": "^2.11.9",
+    "istanbul": "^0.4.3",
+    "mocha": "^2.5.3"
+  }
 }

@@ -1,6 +1,7 @@
 # deep-key
 
 [![Build Status](https://travis-ci.org/retorillo/deep-key.svg?branch=master)](https://travis-ci.org/retorillo/deep-key)
+[![Coverage Status](https://coveralls.io/repos/github/retorillo/deep-key/badge.svg?branch=master)](https://coveralls.io/github/retorillo/deep-key?branch=master)
 [![NPM](https://img.shields.io/npm/v/deep-key.svg)](https://www.npmjs.com/package/deep-key)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
