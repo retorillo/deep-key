@@ -10,7 +10,7 @@ const should = require('should');
 // NOTE: should.be.deepEql cannot check unenumerable members
 // eg.
 // var a = [], b = [];
-// Object.defineProperty(a, ...); 
+// Object.defineProperty(a, ...);
 // should(a).eql(b)
 function exactStringify(obj) {
   if (obj === undefined) return 'undefined';
@@ -21,7 +21,7 @@ function exactStringify(obj) {
     for (var k of Object.getOwnPropertyNames(obj)) {
       if (str.length > 1)
         str.push(',')
-      str.push(`${k}:${keyBasedStringify(obj[k])}`);
+      str.push(`${k}:${exactStringify(obj[k])}`);
     }
     str.push('}');
     return str.join('');
@@ -69,8 +69,8 @@ const sources = {
     },
     'With "filter" option' : {
       method: DeepKey.keys,
-      input: [{ shallow: { deep: { exclude: {}, deeper: { exclude: { deepest: 1 } } } } }, {
-      filter: (deepkey, value) => { return !/exclude/.test(deepkey.join('.'));  } }],
+      input: [{ shallow: { deep: { exclude: {}, deeper: { exclude: { deepest: 1 } }}}},
+        (deepkey, value) => { return !/exclude/.test(deepkey.join('.')); } ],
       expect: [
          ['shallow'],
          ['shallow', 'deep'],
@@ -106,32 +106,90 @@ const sources = {
       ],
     },
   },
-  'set()' : {
-    'Set value via deep-key': {
-      method: (obj, deepkey, val) => { DeepKey.set(obj, deepkey, val); return obj; },
-      input: [ {}, ['shallow', 'deep'], undefined ],
-      expect: { shallow: { deep: undefined } },
+  'accessor()': {
+    'Try to get accessor with empty deep-key': {
+      method: (obj, deepkey) => { return DeepKey.accessor(obj, deepkey) === undefined; },
+      input: [ { }, [] ],
+      expect: true,
     },
-    'Set value via accessor': {
-      method: (obj, deepkey, val) => { DeepKey.accessor(obj, deepkey).set(val); return obj;  },
-      input: [ {}, ['shallow', 'deep'], 'value' ],
-      expect: { shallow: { deep: 'value' } },
+    'Get accessor from non-existing member': {
+      method: (obj, deepkey) => { return DeepKey.accessor(obj, deepkey) !== undefined; },
+      input: [ { p: 'test' }, [ 'p' ] ],
+      expect: true,
     },
-  },
-  'get()' : {
-    'Get value via deep key': {
-      method: DeepKey.get,
-      input: [ { shallow: { deep: { deepest: 'value' } } } , ['shallow', 'deep', 'deepest'] ],
-      expect: 'value',
-    },
-    'Get value via accessor': {
+    'Get value from existing member': {
       method: (obj, deepkey) => { return DeepKey.accessor(obj, deepkey).get();  },
       input: [ { shallow: { deep: { deepest: 'value' } } } , ['shallow', 'deep', 'deepest'] ],
       expect: 'value',
     },
+    'Get value from non-existing member': {
+      method: (obj, deepkey) => { return DeepKey.accessor(obj, deepkey).get();  },
+      input: [ { shallow: { } } , ['shallow', 'deep', 'deepest'] ],
+      expect: undefined,
+    },
+    'Set value to existing member': {
+      method: (obj, deepkey, val) => { DeepKey.accessor(obj, deepkey).set(val); return obj;  },
+      input: [ { shallow: { deep: undefined } } , ['shallow', 'deep'], 'value' ],
+      expect: { shallow: { deep: 'value' } },
+    },
+    'Set value to non-existing member': {
+      input: [ {}, ['shallow', 'deep'], 'value' ],
+      expect: { shallow: { deep: 'value' } },
+    },
+  },
+  'set()' : {
+    'Set value to existing member': {
+      method: (obj, deepkey, val) => { DeepKey.set(obj, deepkey, val); return obj; },
+      input: [ {}, ['shallow', 'deep'], undefined ],
+      expect: { shallow: { deep: undefined } },
+    },
+    'Set value to non-existing member': {
+      input: [ { }, ['shallow', 'deep', 'deeper'], undefined ],
+      expect: { shallow: { deep: { deeper: undefined } } },
+    },
+    'Throws inextensible object error (intermediate)': {
+      method: (obj, deepkey, val) => {
+        try {
+          Object.seal(obj.shallow);
+          DeepKey.set(obj, deepkey, val);
+          return 'success'
+        }
+        catch (e) {
+          return e;
+        }
+      },
+      input: [ { shallow: { } }, // shallow will be sealed later
+        ['shallow', 'deep', 'deeper'], undefined ],
+      expect: 'Inextensible object: shallow',
+    },
+    'Throws inextensible object error (last)': {
+      method: (obj, deepkey, val) => {
+        try {
+          Object.seal(obj.shallow);
+          DeepKey.set(obj, deepkey, val);
+          return 'success'
+        }
+        catch (e) {
+          return e;
+        }
+      },
+      input: [ { shallow: { deep: 1 } }, ['shallow', 'deep', 'deeper'], undefined ],
+      expect: 'Inextensible object: shallow.deep',
+    },
+  },
+  'get()' : {
+    'Get value from existing member': {
+      method: DeepKey.get,
+      input: [ { shallow: { deep: { deepest: 'value' } } } , ['shallow', 'deep', 'deepest'] ],
+      expect: 'value',
+    },
+    'Get value from non-existing member': {
+      input: [ { shallow: {}  } , ['shallow', 'deep', 'deepest'] ],
+      expect: undefined,
+    }
   },
   'touch()': {
-    'For non-empty object': {
+    'With non-empty object': {
       method: (obj, deepkeys) => { for (var k of deepkeys) DeepKey.touch(obj, k); return obj  },
       input: [ { s1: { d1: 'd1' }  }, [
         [ 's1' ],
@@ -141,7 +199,7 @@ const sources = {
       ]],
       expect: { s1: { d1: 'd1', d2: undefined }, s2: { d3: undefined } },
     },
-    'For empty object': {
+    'With empty object': {
       input: [ { }, [
         [ 's1' ],
         [ 's1', 'd1' ],
@@ -175,34 +233,32 @@ const sources = {
     },
   },
   'delete()': {
-    'Delete key': {
+    'Delete existing key': {
       method: (obj, deepkey) => { DeepKey.delete(obj, deepkey); return obj; },
       input: [ { shallow: { deep: { deepest: 'value' } } } , ['shallow', 'deep', 'deepest'] ],
       expect: { shallow: { deep: { } } },
     },
+    'Delete non-existing key': {
+      // To cover line: 'return undefined' on traverse.
+      // Note that { shallow: { { deep: {} } } } cannot cover its line.
+      input: [ { shallow: {} } , ['shallow', 'deep', 'deepest'] ],
+      expect: { shallow: { } },
+    },
   },
   'rename()': {
-    'Rename key': {
+    'Rename existing key': {
       method: (obj, curkey, newkey) => { DeepKey.rename(obj, curkey, newkey); return obj; },
       input: [ { shallow: { deep: { deepest: 'value' } } } ,
         ['shallow', 'deep'], [ 'shallow', 'newdeep'] ],
       expect: { shallow: { newdeep: { deepest: 'value' } } },
     },
+    'Rename non-existing key': {
+      input: [ { shallow: { deep: { deepest: 'value' } } } ,
+        ['nonexisting_shallow'], [ 'newshallow' ] ],
+      expect: { shallow: { deep: { deepest: 'value' } }, newshallow: undefined },
+    },
   },
   'misc': {
-    'Handling inextensible object': {
-      method: (obj, deepkey, val) => {
-        try {
-          DeepKey.set(obj, deepkey, val);
-          return 'success'
-        }
-        catch (e) {
-          return e;
-        }
-      },
-      input: [ { shallow: { deep: 1 } }, ['shallow', 'deep', 'deeper'], undefined ],
-      expect: 'Inextensible object: shallow.deep',
-    },
     'Existing members of sealed object must be readable and writable': {
       method: () => {
         var obj = { };

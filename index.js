@@ -23,9 +23,9 @@ function traverse(obj, deepkey, force) {
     else {
       if (!(deepkey[c] in leaf) || leaf[deepkey[c]] === undefined) {
         if (force) {
-          // if creating intermediate object, its parent must be extensible.
+          // if creating intermediate object, its parent must not be sealed
           if (!Object.isExtensible(leaf))
-            throw `Inextensible object: ${ deepkey.slice(0, c + 1).join('.') }`;
+            throw `Inextensible object: ${ deepkey.slice(0, c).join('.') }`;
           leaf[deepkey[c]] = { };
         }
         else
@@ -52,7 +52,7 @@ function keys(obj, option) {
   if (typeof option === 'number')
     depth = option;
   else if (typeof option === 'function')
-    filter = filter;
+    filter = option;
   else if (typeof option === 'object') {
     all = option.all;
     depth = option.depth;
@@ -76,8 +76,9 @@ function del(obj, deepkey) {
 }
 function set(obj, deepkey, value) {
   var t = traverse(obj, deepkey, true);
-  if (!(t[1] in t[0]) && !Object.isExtensible(t[0]))
-    throw `Inextensible object: ${ deepkey.slice(0, deepkey.length - 1).join('.') }`;
+  // The following codes is unneeded, traverse will check them
+  // if (!(t[1] in t[0]) && !Object.isExtensible(t[0]))
+  //   throw `Inextensible object: ${ deepkey.slice(0, deepkey.length - 1).join('.') }`;
   return (t[0])[t[1]] = value;
 }
 function get(obj, deepkey) {
