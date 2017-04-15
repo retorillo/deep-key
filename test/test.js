@@ -220,6 +220,21 @@ const sources = {
       expect: { s1: { d1: { d2: { d3: 'awesome' } } } },
     },
   },
+  'type()': {
+    'Should return undefined if not existed': {
+      method: (obj, k) => { return DeepKey.type(obj, k); },
+      input: [ { }, [ 'foo', 'bar', 'baz' ] ],
+      expect: 'undefined'
+    },
+    'Should return "object" if its value is null': {
+      input: [ { 'foo': null }, [ 'foo' ] ],
+      expect: 'object'
+    },
+    'Should return "number" if its value is number': {
+      input: [ { 'foo': 1234 }, [ 'foo' ] ],
+      expect: 'number'
+    },
+  },
   'exists()': {
     'Check existence': {
       method: DeepKey.exists,

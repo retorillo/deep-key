@@ -173,6 +173,18 @@ DeepKey.touch(obj, deepkey, value);
 
 Returns value of object member.
 
+### type
+
+Get type of object member that is pointed by deep key.
+If member does not exist, return `"undefined"`.
+Note that `typeof(null)` returns `"object"`.
+
+```javascript
+DeepKey.type(obj, deepkey);
+// equivalent with
+// typeof(DeepKey.get(obj, deepkey))
+```
+
 ### accessor
 
 Get accessor of object member that is pointed by deep key.
@@ -258,6 +270,6 @@ DeepKey.get(obj, ['sealed', 'present']);
 
 ## License
 
-Distributed under the MIT license.
+MIT license.
 
-Copyright (C) 2016 Retorillo
+(C) 2016-2017 Retorillo

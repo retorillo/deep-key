@@ -95,6 +95,9 @@ function touch(obj, deepkey, value) {
   else
     return (t[0])[t[1]];
 }
+function type(obj, deepkey) {
+  return typeof(get(obj, deepkey));
+}
 function exists(obj, deepkey) {
   var t = traverse(obj, deepkey, false);
   return t ? t[0].propertyIsEnumerable(t[1]) : false;
@@ -104,6 +107,7 @@ module.exports = {
   set: set,
   get: get,
   touch: touch,
+  type: type,
   rename: rename,
   delete: del,
   exists: exists,
