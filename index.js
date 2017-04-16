@@ -1,7 +1,5 @@
 'use strict';
 
-
-
 function* iterateKeys(obj, opt, parent) {
   if (obj === null || obj === undefined)
     return;
@@ -17,12 +15,12 @@ function* iterateKeys(obj, opt, parent) {
     child.push(key);
     if (opt.filter && !opt.filter(child, obj[key], !opt.all || obj.propertyIsEnumerable(key)))
       continue;
-    var decend = iterateKeys(obj[key], opt, child);
-    var dfirst = decend.next();
+    var descend = iterateKeys(obj[key], opt, child);
+    var dfirst = descend.next();
     if (opt.leaf) {
       if (!dfirst.done) {
         yield dfirst.value;
-        yield* decend;
+        yield* descend;
       }
       else
         yield child;
@@ -31,7 +29,7 @@ function* iterateKeys(obj, opt, parent) {
       yield child;
       if (!dfirst.done) {
         yield dfirst.value;
-        yield* decend;
+        yield* descend;
       }
     }
   }
