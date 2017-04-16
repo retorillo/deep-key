@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 function* iterateKeys(obj, all, depth, noindex, filter, parent) {
   if (obj === null || obj === undefined) return;
   if (depth > 0 && parent && parent.length >= depth) return;
@@ -34,8 +36,12 @@ function traverse(obj, deepkey, force) {
       leaf = leaf[deepkey[c]];
       // intermediate object must be non-null object or function
       // note that typeof(null) returns 'object'
-      if (leaf === 'null' || (typeof(leaf) !== 'object' && typeof(leaf) !== 'function'))
-        throw `Inextensible object: ${ deepkey.slice(0, c + 1).join('.') }`;
+      if (leaf === 'null' || (typeof(leaf) !== 'object' && typeof(leaf) !== 'function')) {
+        if (force)
+          throw `Inextensible object: ${ deepkey.slice(0, c + 1).join('.') }`;
+        else
+          return undefined;
+      }
     }
   return undefined;
 }
