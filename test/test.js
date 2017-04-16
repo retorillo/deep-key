@@ -186,6 +186,10 @@ const sources = {
     'Get value from non-existing member': {
       input: [ { shallow: {}  } , ['shallow', 'deep', 'deepest'] ],
       expect: undefined,
+    },
+    'Should not throw even though inextensible object': {
+      input: [ { shallow: 'inextensivle'  } , ['shallow', 'deep', 'deepest'] ],
+      expect: undefined,
     }
   },
   'touch()': {
@@ -242,10 +246,13 @@ const sources = {
       expect: true,
     },
     'Check non-existence': {
-      method: DeepKey.exists,
       input: [ { shallow: { deep: { deepest: 'value' } } } , ['shallow', 'deep', 'none'] ],
       expect: false,
     },
+    'Should not throw even though inextensible object': {
+      input: [ { shallow: 'inextensivle'  } , ['shallow', 'deep', 'deepest'] ],
+      expect: false,
+    }
   },
   'delete()': {
     'Delete existing key': {
