@@ -105,6 +105,41 @@ const sources = {
          ['shallow', 'deep', 'deeper', 'array2'],
       ],
     },
+    'With "leaf" option' : {
+      it: 'With "noindex" option',
+      method: (obj, option) => {
+        return DeepKey.keys(obj, option);
+      },
+      input: [{ shallow: { deep: { array1: [1], deeper: { array2: [1]} } } },
+        { leaf: true, }],
+      expect: [
+         ['shallow', 'deep', 'array1', '0' ],
+         ['shallow', 'deep', 'deeper', 'array2', '0' ],
+      ],
+    },
+    'With "leaf" and "noindex" option' : {
+      it: 'With "noindex" option',
+      method: (obj, option) => {
+        return DeepKey.keys(obj, option);
+      },
+      input: [{ shallow: { deep: { array1: [1], deeper: { array2: [1]} } } },
+        { leaf: true, noindex: true }],
+      expect: [
+         ['shallow', 'deep', 'array1', ],
+         ['shallow', 'deep', 'deeper', 'array2', ],
+      ],
+    },
+    'With "leaf" and "noindex" and "depth" option' : {
+      it: 'With "noindex" option',
+      method: (obj, option) => {
+        return DeepKey.keys(obj, option);
+      },
+      input: [{ shallow: { deep: { array1: [1], deeper: { array2: [1]} } } },
+        { leaf: true, noindex: true, depth: 3 }],
+      expect: [
+        ['shallow', 'deep', 'array1' ], ['shallow', 'deep', 'deeper']
+      ],
+    },
   },
   'accessor()': {
     'Try to get accessor with empty deep-key': {

@@ -17,8 +17,23 @@ function* iterateKeys(obj, opt, parent) {
     child.push(key);
     if (opt.filter && !opt.filter(child, obj[key], !opt.all || obj.propertyIsEnumerable(key)))
       continue;
-    yield child;
-    yield* iterateKeys(obj[key], opt, child);
+    var decend = iterateKeys(obj[key], opt, child);
+    var dfirst = decend.next();
+    if (opt.leaf) {
+      if (!dfirst.done) {
+        yield dfirst.value;
+        yield* decend;
+      }
+      else
+        yield child;
+    }
+    else {
+      yield child;
+      if (!dfirst.done) {
+        yield dfirst.value;
+        yield* decend;
+      }
+    }
   }
 }
 function traverse(obj, deepkey, force) {
