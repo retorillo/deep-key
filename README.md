@@ -241,18 +241,18 @@ DeepKey.keys(obj, { noindex: true });
 `leaf` option allows to enumerate only "leafs" that have no descendant keys:
 
 ```javascript
-Object.keys({a: {b: {c: 'd'}}}, {leaf: true});
+DeepKeys.keys({a: {b: {c: 'd'}}}, {leaf: true});
 // [ ['a', 'b', 'c', 'd'] ]
 ```
 
 When Array members are present, `noindex` is recommended in most cases.
 
 ```javascript
-Object.keys({a: ['b', 'c']}, {leaf: true});
+DeepKeys.keys({a: ['b', 'c']}, {leaf: true});
 // [ ['a', '0'], ['a', '1'] ]
 // In most cases, maybe indexes are not expected "leafs".
 
-Object.keys({a: ['b', 'c']}, {leaf: true, noindex: true});
+DeepKeys.keys({a: ['b', 'c']}, {leaf: true, noindex: true});
 // [ ['a'] ]
 ```
 
@@ -263,7 +263,7 @@ When want to filter "exact" leafs that have no descendant keys, try the followin
 
 ```javascript
 // Filter leaf that depth is 3
-Object.keys(obj, { leaf: true }).filter(key => key.length <= 3);
+DeepKey.keys(obj, { leaf: true }).filter(key => key.length <= 3);
 ```
 
 ## Handling inextensible object
