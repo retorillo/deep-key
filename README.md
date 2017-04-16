@@ -27,116 +27,11 @@ npm install --save deep-key
 
 ### keys
 
-Get all deep keys recursively.
+Get all deep keys recursively. Many options are available. See [Options](#Options).
 
 ```javascript
 DeepKey.keys(obj);
-DeepKey.keys(obj, option); 
-```
-
-#### options
-
-##### all
-
-`all` option allows to get all member enumeration including unenumerable members. 
-
-```javascript
-var obj = { enum: 'e', };
-Object.defineProperty(obj, 'unenum', { value: 'u' });
-obj.propertyIsEnumerable('unenum');
-// false
-DeepKeys.keys(obj);
-// [ ['enum'] ]
-DeepKeys.keys(obj, { all: true });
-// [ ['enum'], ['unenum'] ]
-```
-
-##### depth
-
-`depth` option allows to limit enumeration by depth.
-
-```javascript
-var obj = { prop1: { prop2: { prop3: { } } } }
-console.log(DeepKey.keys(obj, { depth: 2 }));
-// [ ['prop1'], ['prop1', 'prop2'] ]
-```
-
-If merely want to specify `depth` option, can directly pass into second argument
-in place of `option`.
-
-```javascript
-DeepKey.keys(obj, depth);
-```
-
-Note that all keys will be enumerated if zero or negative value is specified for
-`depth`.
-
-##### filter
-
-`filter` option allows to limit enumeration by your custom function.
-
-```javascript
-var obj = {
-  prop1: { prop2: {} }
-  prop3: { skip1: {} }, 
-  prop4: 'p4', 
-  skip2: 'e2' 
-}
-
-console.log(DeepKey.keys(obj, {
-  filter: (deepkey, value) => { 
-    return !/skip\d+/.test(deepkey.join('.'));
-  }
-});
-// [ ['prop1'], ['prop1', 'prop2'], ['prop3'], ['prop4'] ]
-```
-
-For each member, `filter` function is called back by passing the following three arguments:
-
-- `deepkey` : deep key of member
-- `value` : value of member that is pointed by `deepkey`
-- `enumerable` : whether member is enumerable (`propertyIsEnumerable`)
-
-`filter` function must return `true` in order to include in enumeration,
-`false` otherwise.
-
-If merely want to specify `filter` option, can directly pass into second
-argument in place of `option`.
-
-```javascript
-DeepKey.keys(obj, filter);
-```
-
-##### noindex
-
-`noindex` option allows to suppress index-enumeration of `Array`.
-
-In JavaScript world, `Array` is also object-type and its indexes are `keys` of object. 
-
-> An Array object is an exotic object that gives special treatment to array index property keys
-> ([ES6 9.4.2](http://www.ecma-international.org/ecma-262/6.0/#sec-array-exotic-objects))
-
-Try the following code:
-
-```javascript
-typeof [];
-// 'object'
-Object.keys(['one', 'two', 'three']);
-// [ '0', '1', '2' ]
-```
-
-Therefore, `keys` of this package also enumerate keys of `Array` by default.
-In most case, this behavior is an undesirable overboundance.
-`noindex` option can suppress this.
-
-**NOTE:** `Array` is also extensible. Note that its extended member will be
-always enumerated, regardless of `noindex` option.
-
-```javascript
-var obj = { array: [1,2,3], val: 4 };
-obj.array.five = 5;
-DeepKey.keys(obj, { noindex: true });
-// [ ['array'], ['array', 'five'], ['val'] ]
+DeepKey.keys(obj, option);
 ```
 
 ### get
@@ -232,6 +127,143 @@ Check existence of object member that is pointed by deep key.
 
 ```javascript
 DeepKey.exists(obj, deepkey);
+```
+
+## Options
+
+The following options are available for [keys()](#keys).
+
+### all
+
+`all` option allows to get all member enumeration including unenumerable members.
+
+```javascript
+var obj = { enum: 'e', };
+Object.defineProperty(obj, 'unenum', { value: 'u' });
+obj.propertyIsEnumerable('unenum');
+// false
+DeepKeys.keys(obj);
+// [ ['enum'] ]
+DeepKeys.keys(obj, { all: true });
+// [ ['enum'], ['unenum'] ]
+```
+
+### depth
+
+`depth` option allows to limit enumeration by depth.
+
+```javascript
+var obj = { prop1: { prop2: { prop3: { } } } }
+console.log(DeepKey.keys(obj, { depth: 2 }));
+// [ ['prop1'], ['prop1', 'prop2'] ]
+```
+
+If merely want to specify `depth` option, can directly pass into second argument
+in place of `option`.
+
+```javascript
+DeepKey.keys(obj, depth);
+```
+
+Note that all keys will be enumerated if zero or negative value is specified for
+`depth`.
+
+### filter
+
+`filter` option allows to limit enumeration by your custom function.
+
+```javascript
+var obj = {
+  prop1: { prop2: {} }
+  prop3: { skip1: {} },
+  prop4: 'p4',
+  skip2: 'e2'
+}
+
+console.log(DeepKey.keys(obj, {
+  filter: (deepkey, value) => {
+    return !/skip\d+/.test(deepkey.join('.'));
+  }
+});
+// [ ['prop1'], ['prop1', 'prop2'], ['prop3'], ['prop4'] ]
+```
+
+For each member, `filter` function is called back by passing the following three arguments:
+
+- `deepkey` : deep key of member
+- `value` : value of member that is pointed by `deepkey`
+- `enumerable` : whether member is enumerable (`propertyIsEnumerable`)
+
+`filter` function must return `true` in order to include in enumeration,
+`false` otherwise.
+
+If merely want to specify `filter` option, can directly pass into second
+argument in place of `option`.
+
+```javascript
+DeepKey.keys(obj, filter);
+```
+
+### noindex
+
+`noindex` option allows to suppress index-enumeration of `Array`.
+
+In JavaScript world, `Array` is also object-type and its indexes are `keys` of object.
+
+> An Array object is an exotic object that gives special treatment to array index property keys
+> ([ES6 9.4.2](http://www.ecma-international.org/ecma-262/6.0/#sec-array-exotic-objects))
+
+Try the following code:
+
+```javascript
+typeof [];
+// 'object'
+Object.keys(['one', 'two', 'three']);
+// [ '0', '1', '2' ]
+```
+
+Therefore, `keys` of this package also enumerate keys of `Array` by default.
+In most case, this behavior is an undesirable overboundance.
+`noindex` option can suppress this.
+
+**NOTE:** `Array` is also extensible. Note that its extended member will be
+always enumerated, regardless of `noindex` option.
+
+```javascript
+var obj = { array: [1,2,3], val: 4 };
+obj.array.five = 5;
+DeepKey.keys(obj, { noindex: true });
+// [ ['array'], ['array', 'five'], ['val'] ]
+```
+
+### leaf
+
+`leaf` option allows to enumerate only "leafs" that have no descendant keys:
+
+```javascript
+Object.keys({a: {b: {c: 'd'}}}, {leaf: true});
+// [ ['a', 'b', 'c', 'd'] ]
+```
+
+When Array members are present, `noindex` is recommended in most cases.
+
+```javascript
+Object.keys({a: ['b', 'c']}, {leaf: true});
+// [ ['a', '0'], ['a', '1'] ]
+// In most cases, maybe indexes are not expected "leafs".
+
+Object.keys({a: ['b', 'c']}, {leaf: true, noindex: true});
+// [ ['a'] ]
+```
+
+Finally, the behavior both `leaf` and `depth` options are specified is
+cautionable. It will return **pseudo-leafs** under the restriction of specified
+depth, therefore returned members might have descendant keys if no depth option.
+When want to filter "exact" leafs that have no descendant keys, try the following code:
+
+```javascript
+// Filter leaf that depth is 3
+Object.keys(obj, { leaf: true }).filter(key => key.length <= 3);
 ```
 
 ## Handling inextensible object
