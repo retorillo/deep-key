@@ -27,7 +27,7 @@ npm install --save deep-key
 
 ### keys
 
-Get all deep keys recursively. Many options are available. See [Options](#Options).
+Get all deep keys recursively. Many options are available. See [Options](#options).
 
 ```javascript
 DeepKey.keys(obj);
